@@ -1,0 +1,40 @@
+*
+{
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+	font-family: "メイリオ","Meiryo","Arial","Verdana","ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","Osaka","ＭＳ Ｐゴシック","MS PGothic","Sans-Serif";
+	font-size: 14px;
+}
+p,pre,table,ul,ol,blockquote,span,input
+{
+	margin: 5px 15px 5px 15px;
+}
+ul, ol { padding-left: 20px }
+h1 { background-color: #FDF; }
+h2 { background-color: #BFF; }
+h3 { background-color: #FFC; }
+h4 { background-color: #DDD; }
+h5 { background-color: #DDD; }
+h6 { background-color: #DDD; }
+h1,h2,h3,h4,h5,h6 { margin: 0px 0px 0px 0px; padding: 2px 10px 2px 10px; font-weight: normal; }
+h1 { font-weight : bold; }
+th, td { padding: 0 10px 0 10px; }
+th { background:#B0D4E5; }
+*
+{
+}
+pre
+{
+	font-family: "ＭＳ ゴシック","MS Gothic","Osaka-等幅",'Osaka-Mono',monospace;
+}
+body {
+	margin: auto;
+	max-width: 1000px;
+	background-color: #B0D4E5;
+}
+#container
+{
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+	background-color: #ffffff;
+}

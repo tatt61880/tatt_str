@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=yes">
+    <title>Tatt文字列</title>
+    <link rel="shortcut icon" href="./images/t.gif" />
+    <link rel="stylesheet" href="./style.css">
+    <style>
+    </style>
+  </head>
+
+  <body>
+    <div id="container">
+      <h1>Tatt文字列生成ツール</h1>
+      <h2>Tatt文字列</h2>
+      <p>
+      ここに文字列を入力してください。<br>
+      <!--
+      <textarea id="textarea" cols="30" rows="1"></textarea>
+      -->
+      <input type="text" id="textarea" size="30">
+      <br>
+      フォントサイズ: <input type="number" id="fontsize" min="2" max="20" style="width:50px;">
+      </p>
+
+      <h2>通常の文字列</h2>
+      <p>
+      <canvas id="cv1" width="500" height="20"></canvas>
+      </p>
+
+      <h2>Tatt文字列</h2>
+      <p>
+      <canvas id="cv2" width="2000" height="400"></canvas>
+      </p>
+
+      <h2>このプログラムの使い方</h2>
+      <p>
+      入力欄の文字列を編集後、Enterを入力するか、テキストエリアからフォーカスを外すと画像が更新されます。<br>
+      【2019/01/03追記】<br>
+      Windows上で動作確認をしていましたが、iOSなどのアンチエイリアスがかかるケース(「通常の文字列」がぼやけた表示になるケース)で、あまり良い変換にならないことがわかりましたm(__)m
+      </p>
+
+      <h2>このプログラムの作者</h2>
+      <table style="text-align:center; border:0;">
+        <tr>
+          <td>
+            <img src="./images/tatt61880.png" alt="(Tattアイコン)" />
+          </td>
+          <td>
+            たっと(Tatt) <a target="_blank" href="https://twitter.com/tatt61880">@tatt61880</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <script src="./js/tatt_str.js?v=20190105"></script>
+  </body>
+</html>
