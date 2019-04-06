@@ -18,7 +18,7 @@ let textareaInput;
 let fontsizeInput;
 let fontsize = 12;
 let img = new Image();
-img.src = './images/blocks.png';
+img.src = './images/blocks.png?v=20190407';
 
 let ctx2Xnext = 0;
 let ctx2Ynext = 0;
