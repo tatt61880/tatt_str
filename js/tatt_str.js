@@ -342,7 +342,9 @@ function drawData(data) {
         if (x != width - 1) {
           if (data[y][x + 1] != idNoBlock) {
             flagRight = true;
-            drawBlock(posX, posY, 0, 1);
+            if (data[y][x] != 8) {
+              drawBlock(posX, posY, 0, 1);
+            }
           }
         }
         if (y != height - 1) {
@@ -352,7 +354,6 @@ function drawData(data) {
           }
           if (x != 0 && !flagBottom) {
             if (data[y + 1][x - 1] != idNoBlock) {
-              flagBottom = true;
               drawBlock(posX, posY, 2, 1);
             }
           }
