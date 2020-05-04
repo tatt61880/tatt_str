@@ -331,12 +331,14 @@ function redistributeId(data) {
 function drawData(data) {
   let height = data.length;
   let width = data[0].length;
+  let drawLine = document.getElementById("radioDrawLine").checked;
   for (let y = height - 1; y >= 0; y--) {
     for (let x = width - 1; x >= 0; x--) {
       let posX = (ctx2X + x + 1) * blockWidth2;
       let posY = (currentY + y) * blockHeight2 - x;
       if (data[y][x] != idNoBlock) {
         drawBlock(posX, posY, data[y][x], 0);
+        if (drawLine) continue;
         let flagRight = false;
         let flagBottom = false;
         if (x != width - 1) {
