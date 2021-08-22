@@ -8,7 +8,7 @@ const blockWidth = 25;
 const blockHeight = 19;
 const blockWidth2 = 12;
 const blockHeight2 = 13;
-const fontname = 'monospace';
+const fontname = 'MS Gothic';
 
 let canvas1;
 let canvas2;
