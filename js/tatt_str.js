@@ -17,6 +17,7 @@ let ctx2;
 let textareaInput;
 let fontsizeInput;
 let fontsize = 12;
+let fontInfo;
 let img = new Image();
 img.src = './images/blocks.png?v=20190407';
 
@@ -35,6 +36,7 @@ function onLoad() {
   ctx2 = canvas2.getContext('2d');
   textareaInput = document.getElementById('textarea');
   fontsizeInput = document.getElementById('fontsize');
+  fontInfo = document.getElementById('font_info');
   textareaInput.addEventListener('change', onChange, false);
   fontsizeInput.addEventListener('change', onChange, false);
   textareaInput.value = 'Hello!!';
@@ -54,6 +56,7 @@ function onChange() {
   canvas2.width = (ctx2Xnext + 1.5) * blockWidth2;
   canvas2.height = ctx2Ynext * blockHeight2;
   draw(text); // 再描画します。
+  fontInfo.innerHTML = ctx1.font;
 }
 // }}}
 
