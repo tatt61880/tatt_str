@@ -37,8 +37,8 @@ function onLoad() {
   textareaInput = document.getElementById('textarea');
   fontsizeInput = document.getElementById('fontsize');
   fontInfo = document.getElementById('font_info');
-  textareaInput.addEventListener('change', onChange, false);
-  fontsizeInput.addEventListener('change', onChange, false);
+  textareaInput.addEventListener('input', onChange, false);
+  fontsizeInput.addEventListener('input', onChange, false);
   textareaInput.value = 'Hello!!';
   fontsizeInput.value = 12;
 
@@ -391,25 +391,27 @@ function drawBlock(x, y, id, h) {
 // }}}
 
 // {{{ Stack
-function Stack() {
-  this.data = [];
+class Stack {
+  constructor() {
+    this.data = [];
+  }
+  push(val) {
+    this.data.push(val);
+    return val;
+  }
+  pop() {
+    return this.data.pop();
+  }
+  top() {
+    return this.data[this.data.length - 1];
+  }
+  size() {
+    return this.data.length;
+  }
+  empty() {
+    return this.data.length == 0;
+  }
 }
-Stack.prototype.push = function(val) {
-  this.data.push(val);
-  return val;
-};
-Stack.prototype.pop = function() {
-  return this.data.pop();
-};
-Stack.prototype.top = function() {
-  return this.data[this.data.length - 1];
-};
-Stack.prototype.size = function() {
-  return this.data.length;
-};
-Stack.prototype.empty = function() {
-  return this.data.length == 0;
-};
 // }}}
 
 // vim:set expandtab ts=2 sw=2 sts=2:
