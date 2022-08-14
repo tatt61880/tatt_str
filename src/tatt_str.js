@@ -1,3 +1,5 @@
+'use strict';
+
 // {{{ global variables / constants
 window.addEventListener('load', onLoad, false);
 const idNoBlock = -1;
@@ -334,7 +336,7 @@ function redistributeId(data) {
 function drawData(data) {
   let height = data.length;
   let width = data[0].length;
-  let drawLine = document.getElementById("checkboxDrawLine").checked;
+  let drawLine = document.getElementById('checkboxDrawLine').checked;
   for (let y = height - 1; y >= 0; y--) {
     for (let x = width - 1; x >= 0; x--) {
       let posX = (ctx2X + x + 1) * blockWidth2;
