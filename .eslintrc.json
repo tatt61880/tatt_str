@@ -3,10 +3,7 @@
     "parser": "@babel/eslint-parser",
     "requireConfigFile": false
   },
-  "extends": [
-    "eslint:recommended",
-    "prettier"
-  ],
+  "extends": "eslint:recommended",
   "globals": {
     "clearTimeout": true,
     "console": true,
