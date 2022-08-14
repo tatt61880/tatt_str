@@ -14,6 +14,7 @@
   "homepage": "https://github.com/tatt61880/tatt_str#readme",
   "scripts": {
     "eslint": "eslint ./src/*.js --fix",
+    "prettier": "prettier ./src/*.js --write",
     "htmlhint": "htmlhint ./*.html",
     "stylelint": "stylelint ./css/*.css --fix"
   },
@@ -21,7 +22,9 @@
     "@babel/core": "^7.18.10",
     "@babel/eslint-parser": "^7.18.9",
     "eslint": "^8.21.0",
+    "eslint-config-prettier": "^8.5.0",
     "htmlhint": "^1.1.4",
+    "prettier": "^2.7.1",
     "stylelint": "^14.9.1",
     "stylelint-config-standard": "^26.0.0"
   },
