@@ -1,13 +1,16 @@
 html {
-  margin: 0;
-  padding: 0;
-  font-family: Meiryo, Arial, Verdana, "Hiragino Kaku Gothic Pro", Osaka, "MS PGothic", sans-serif;
   font-size: 14px;
+}
+
+body {
+  margin: 0;
+  background-color: #ccffff;
 }
 
 #contents {
   margin: 0 auto;
   padding: 0;
+  width: 1000px;
   background-color: white;
 }
 
@@ -52,11 +55,5 @@ th {
 }
 
 pre {
-  font-family: "ＭＳ ゴシック", "MS Gothic", "Osaka-等幅", Osaka-Mono, monospace;
-}
-
-body {
-  margin: auto;
-  max-width: 1000px;
-  background-color: #ccffff;
+  font-family: "MS Gothic", "Osaka-等幅", Osaka-Mono, monospace;
 }
