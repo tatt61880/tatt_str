@@ -1,8 +1,14 @@
-* {
+html {
   margin: 0;
   padding: 0;
   font-family: Meiryo, Arial, Verdana, "Hiragino Kaku Gothic Pro", Osaka, "MS PGothic", sans-serif;
   font-size: 14px;
+}
+
+#contents {
+  margin: 0 auto;
+  padding: 0;
+  background-color: white;
 }
 
 p,
@@ -17,32 +23,32 @@ input {
 }
 
 ul,
-ol { padding-left: 20px; }
+ol {
+  padding-left: 20px;
+}
 
 h1 {
-  background-color: #ffddff;
-  font-weight: bold;
-}
-h2 { background-color: #bbffff; }
-h3 { background-color: #ffffcc; }
-h4 { background-color: #dddddd; }
-h5 { background-color: #dddddd; }
-h6 { background-color: #dddddd; }
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
   margin: 0;
   padding: 2px 10px;
-  font-weight: normal;
+  background-color: #ffddff;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+h2 {
+  margin: 0;
+  padding: 2px 10px;
+  background-color: #bbddff;
+  font-size: 1.1rem;
 }
 
 th,
-td { padding: 0 10px; }
-th { background: #b0d4e5; }
+td {
+  padding: 0 10px;
+}
+
+th {
+  background: #b0d4e5;
+}
 
 pre {
   font-family: "ＭＳ ゴシック", "MS Gothic", "Osaka-等幅", Osaka-Mono, monospace;
@@ -51,11 +57,5 @@ pre {
 body {
   margin: auto;
   max-width: 1000px;
-  background-color: #b0d4e5;
-}
-
-#container {
-  margin: 0;
-  padding: 0;
-  background-color: #ffffff;
+  background-color: #ccffff;
 }

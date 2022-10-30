@@ -20,7 +20,7 @@ let textareaInput;
 let fontsizeInput;
 let fontsize = 12;
 let fontInfo;
-let img = new Image();
+const img = new Image();
 img.src = './images/blocks.png?v=20190407';
 
 let ctx2Xnext = 0;
@@ -50,7 +50,7 @@ function onLoad() {
 
 // {{{ onChange
 function onChange() {
-  let text = textareaInput.value;
+  const text = textareaInput.value;
   fontsize = fontsizeInput.value;
   ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
 
@@ -71,7 +71,7 @@ function draw(text) {
   ctx2.fillStyle = 'rgb(255, 255, 255)';
   ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
   for (let i = 0; i < text.length; i++) {
-    let data = getCharData(text[i]);
+    const data = getCharData(text[i]);
     addTatt(data);
     drawData(data);
   }
@@ -83,15 +83,15 @@ function getCharData(txt) {
   ctx1.font = fontsize + 'px ' + fontname;
   ctx1.fillStyle = 'blue';
 
-  let tm = ctx1.measureText(txt);
-  let width = Math.ceil(tm.width);
-  let height = fontsize;
+  const tm = ctx1.measureText(txt);
+  const width = Math.ceil(tm.width);
+  const height = fontsize;
   ctx1.fillText(txt, ctx1X, currentY + fontsize);
 
   let minX = ctx1X;
   let maxX = ctx1X + width - 1;
-  let minY = currentY;
-  let maxY = currentY + height;
+  const minY = currentY;
+  const maxY = currentY + height;
 
   /*
   for (let y = maxY; y >= minY; y--) {
@@ -119,7 +119,7 @@ function getCharData(txt) {
 
   for (let x = maxX; x >= minX; x--) {
     for (let y = minY; y <= maxY; y++) {
-      let alpha = ctx1.getImageData(x, y, 1, 1).data[3];
+      const alpha = ctx1.getImageData(x, y, 1, 1).data[3];
       if (alpha) {
         maxX = x;
         x = -1;
@@ -130,7 +130,7 @@ function getCharData(txt) {
 
   for (let x = minX; x <= maxX; x++) {
     for (let y = minY; y <= maxY; y++) {
-      let alpha = ctx1.getImageData(x, y, 1, 1).data[3];
+      const alpha = ctx1.getImageData(x, y, 1, 1).data[3];
       if (alpha) {
         minX = x;
         x = maxX + 1;
@@ -146,11 +146,11 @@ function getCharData(txt) {
   console.log(maxY);
   */
 
-  let data = new Array(maxY - minY + 1);
+  const data = new Array(maxY - minY + 1);
   for (let y = minY; y <= maxY; y++) {
     data[y - minY] = new Array(maxX - minX + 1);
     for (let x = minX; x <= maxX; x++) {
-      let alpha = ctx1.getImageData(x, y, 1, 1).data[3];
+      const alpha = ctx1.getImageData(x, y, 1, 1).data[3];
       if (alpha) {
         data[y - minY][x - minX] = idSimple;
       } else {
@@ -170,8 +170,8 @@ function getCharData(txt) {
 
 // {{{ addTatt
 function addTatt(data) {
-  let height = data.length;
-  let width = data[0].length;
+  const height = data.length;
+  const width = data[0].length;
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       if (data[y][x] == idSimple) {
@@ -190,20 +190,20 @@ function addTatt(data) {
 }
 
 function setTarget(x, y, data) {
-  let height = data.length;
-  let width = data[0].length;
-  let st = new Stack();
+  const height = data.length;
+  const width = data[0].length;
+  const st = new Stack();
   st.push([x, y]);
   while (st.size()) {
-    let pos = st.pop();
-    let xx = pos[0];
-    let yy = pos[1];
+    const pos = st.pop();
+    const xx = pos[0];
+    const yy = pos[1];
     data[yy][xx] = idTarget;
     const dx = [-1, -1, -1, 0, 0, 1, 1, 1];
     const dy = [-1, 0, 1, -1, 1, -1, 0, 1];
     for (let i = 0; i < 8; i++) {
-      let xxx = xx + dx[i];
-      let yyy = yy + dy[i];
+      const xxx = xx + dx[i];
+      const yyy = yy + dy[i];
       if (0 <= xxx && xxx < width && 0 <= yyy && yyy < height) {
         if (data[yyy][xxx] == idInitial) {
           st.push([xxx, yyy]);
@@ -214,8 +214,8 @@ function setTarget(x, y, data) {
 }
 
 function redistributeId(data) {
-  let height = data.length;
-  let width = data[0].length;
+  const height = data.length;
+  const width = data[0].length;
 
   let minY;
   let maxY;
@@ -334,13 +334,13 @@ function redistributeId(data) {
 
 // {{{ drawData
 function drawData(data) {
-  let height = data.length;
-  let width = data[0].length;
-  let drawLine = document.getElementById('checkboxDrawLine').checked;
+  const height = data.length;
+  const width = data[0].length;
+  const drawLine = document.getElementById('checkboxDrawLine').checked;
   for (let y = height - 1; y >= 0; y--) {
     for (let x = width - 1; x >= 0; x--) {
-      let posX = (ctx2X + x + 1) * blockWidth2;
-      let posY = (currentY + y) * blockHeight2 - x;
+      const posX = (ctx2X + x + 1) * blockWidth2;
+      const posY = (currentY + y) * blockHeight2 - x;
       if (data[y][x] != idNoBlock) {
         drawBlock(posX, posY, data[y][x], 0);
         if (drawLine) continue;
