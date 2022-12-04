@@ -174,14 +174,14 @@ function addTatt(data) {
   const width = data[0].length;
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      if (data[y][x] == idSimple) {
+      if (data[y][x] === idSimple) {
         data[y][x] = idInitial;
       }
     }
   }
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      if (data[y][x] == idInitial) {
+      if (data[y][x] === idInitial) {
         setTarget(x, y, data);
         redistributeId(data);
       }
@@ -205,7 +205,7 @@ function setTarget(x, y, data) {
       const xxx = xx + dx[i];
       const yyy = yy + dy[i];
       if (0 <= xxx && xxx < width && 0 <= yyy && yyy < height) {
-        if (data[yyy][xxx] == idInitial) {
+        if (data[yyy][xxx] === idInitial) {
           st.push([xxx, yyy]);
         }
       }
@@ -223,7 +223,7 @@ function redistributeId(data) {
   let maxX;
   for (let y = height - 1; y >= 0; y--) {
     for (let x = 0; x < width; x++) {
-      if (data[y][x] == idTarget) {
+      if (data[y][x] === idTarget) {
         maxY = y;
         y = -1;
         break;
@@ -232,7 +232,7 @@ function redistributeId(data) {
   }
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      if (data[y][x] == idTarget) {
+      if (data[y][x] === idTarget) {
         minY = y;
         y = height;
         break;
@@ -241,7 +241,7 @@ function redistributeId(data) {
   }
   for (let x = 0; x < width; x++) {
     for (let y = minY; y <= maxY; y++) {
-      if (data[y][x] == idTarget) {
+      if (data[y][x] === idTarget) {
         minX = x;
         x = width;
         break;
@@ -250,7 +250,7 @@ function redistributeId(data) {
   }
   for (let x = width - 1; x >= 0; x--) {
     for (let y = minY; y <= maxY; y++) {
-      if (data[y][x] == idTarget) {
+      if (data[y][x] === idTarget) {
         maxX = x;
         x = -1;
         break;
@@ -261,18 +261,18 @@ function redistributeId(data) {
   // 脚の部分(先に脚から解析することで、頭が脚に挟まれた状態のブロックも良い感じ)
   let legL;
   let legR;
-  if (minY != maxY || maxX - minX >= 2) {
+  if (minY !== maxY || maxX - minX >= 2) {
     for (let y = height - 1; y >= 0; y--) {
       for (let x = 0; x < width; x++) {
-        if (data[y][x] == idTarget) {
+        if (data[y][x] === idTarget) {
           legL = x;
           for (let xx = width - 1; xx >= 0; xx--) {
-            if (data[y][xx] == idTarget) {
+            if (data[y][xx] === idTarget) {
               legR = xx;
               break;
             }
           }
-          if (legL == legR) {
+          if (legL === legR) {
             data[y][legL] = 5;
           } else {
             data[y][legL] = 6;
@@ -289,22 +289,22 @@ function redistributeId(data) {
     let faceR;
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        if (data[y][x] == idTarget) {
+        if (data[y][x] === idTarget) {
           faceL = x;
           for (let xx = width - 1; xx >= 0; xx--) {
-            if (data[y][xx] == idTarget) {
+            if (data[y][xx] === idTarget) {
               faceR = xx;
               break;
             }
           }
 
-          if (faceL == faceR) {
+          if (faceL === faceR) {
             data[y][faceL] = 1;
-          } else if (faceL == faceR - 1) {
+          } else if (faceL === faceR - 1) {
             data[y][faceL] = 8;
             data[y][faceL + 1] = 9;
-          } else if (faceL == faceR - 2) {
-            if (data[y][faceL + 1] == idTarget) {
+          } else if (faceL === faceR - 2) {
+            if (data[y][faceL + 1] === idTarget) {
               data[y][faceL] = 2;
               data[y][faceL + 1] = 3;
               data[y][faceL + 2] = 4;
@@ -324,7 +324,7 @@ function redistributeId(data) {
   // それ以外
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      if (data[y][x] == idTarget) {
+      if (data[y][x] === idTarget) {
         data[y][x] = idSimple;
       }
     }
@@ -341,32 +341,32 @@ function drawData(data) {
     for (let x = width - 1; x >= 0; x--) {
       const posX = (ctx2X + x + 1) * blockWidth2;
       const posY = (currentY + y) * blockHeight2 - x;
-      if (data[y][x] != idNoBlock) {
+      if (data[y][x] !== idNoBlock) {
         drawBlock(posX, posY, data[y][x], 0);
         if (drawLine) continue;
         let flagRight = false;
         let flagBottom = false;
-        if (x != width - 1) {
-          if (data[y][x + 1] != idNoBlock) {
+        if (x !== width - 1) {
+          if (data[y][x + 1] !== idNoBlock) {
             flagRight = true;
-            if (data[y][x] != 8) {
+            if (data[y][x] !== 8) {
               drawBlock(posX, posY, 0, 1);
             }
           }
         }
-        if (y != height - 1) {
-          if (data[y + 1][x] != idNoBlock) {
+        if (y !== height - 1) {
+          if (data[y + 1][x] !== idNoBlock) {
             flagBottom = true;
             drawBlock(posX, posY, 1, 1);
           }
-          if (x != 0 && !flagBottom) {
-            if (data[y + 1][x - 1] != idNoBlock) {
+          if (x !== 0 && !flagBottom) {
+            if (data[y + 1][x - 1] !== idNoBlock) {
               drawBlock(posX, posY, 2, 1);
             }
           }
         }
         if (flagRight && flagBottom) {
-          if (data[y + 1][x + 1] != idNoBlock) {
+          if (data[y + 1][x + 1] !== idNoBlock) {
             drawBlock(posX, posY, 3, 1);
           }
         }
@@ -411,7 +411,7 @@ class Stack {
     return this.data.length;
   }
   empty() {
-    return this.data.length == 0;
+    return this.data.length === 0;
   }
 }
 // }}}
