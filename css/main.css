@@ -37,23 +37,20 @@ h1 {
   margin: 0;
   font-size: 1.2rem;
   font-weight: bold;
-  background-color: #ffddff;
+  color: #000055;
+  background-color: #c0cbff;
 }
 
 h2 {
   padding: 2px 10px;
   margin: 0;
   font-size: 1.1rem;
-  background-color: #bbddff;
+  background-color: #c0cbff;
 }
 
 th,
 td {
   padding: 0 10px;
-}
-
-th {
-  background: #b0d4e5;
 }
 
 pre {
