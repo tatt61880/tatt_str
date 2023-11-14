@@ -89,30 +89,6 @@
     const minY = currentY;
     const maxY = currentY + height;
 
-    /*
-  for (let y = maxY; y >= minY; y--) {
-    for (let x = maxX; x < minX; x++) {
-      let alpha = ctx1.getImageData(x, y, 1, 1).data[3];
-      if (alpha) {
-        maxY = y;
-        x = maxX + 1;
-        y = -1;
-      }
-    }
-  }
-
-  for (let y = minY; y <= maxY; y++) {
-    for (let x = minX; x < maxX; x++) {
-      let alpha = ctx1.getImageData(x, y, 1, 1).data[3];
-      if (alpha) {
-        minY = y;
-        x = maxX + 1;
-        y = maxY + 1;
-      }
-    }
-  }
-  */
-
     for (let x = maxX; x >= minX; x--) {
       for (let y = minY; y <= maxY; y++) {
         const alpha = ctx1.getImageData(x, y, 1, 1).data[3];
@@ -135,13 +111,6 @@
       }
     }
 
-    /*
-  console.log(minX);
-  console.log(maxX);
-  console.log(minY);
-  console.log(maxY);
-  */
-
     const data = new Array(maxY - minY + 1);
     for (let y = minY; y <= maxY; y++) {
       data[y - minY] = new Array(maxX - minX + 1);
@@ -153,7 +122,6 @@
           data[y - minY][x - minX] = idNoBlock;
         }
       }
-      // console.log(str);
     }
 
     ctx2X = ctx2Xnext;
