@@ -8,9 +8,22 @@
     "es2021": true,
     "node": true
   },
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended",
+    "prettier"
+  ],
   "globals": {},
+  "plugins": [
+    "prettier"
+  ],
   "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "printWidth": 80,
+        "singleQuote": true
+      }
+    ],
     "array-bracket-spacing": "error",
     "arrow-body-style": [
       "error",
