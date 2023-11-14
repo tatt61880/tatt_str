@@ -9,6 +9,30 @@ body {
   background-color: #ccffff;
 }
 
+header {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 42px;
+  text-align: left;
+  background-color: #c0cbff;
+  border: 1px solid #c0cbff;
+}
+
+.title {
+  margin: 10px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000055;
+}
+
+#version {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #7777aa;
+}
+
 #contents {
   width: 1000px;
   padding: 0;

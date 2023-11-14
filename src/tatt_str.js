@@ -1,7 +1,7 @@
 'use strict';
+const VERSION_TEXT = 'v2023.11.14';
 
 // {{{ global variables / constants
-window.addEventListener('load', onLoad, false);
 const idNoBlock = -1;
 const idInitial = -2;
 const idTarget = -3;
@@ -28,10 +28,14 @@ let ctx2Ynext = 0;
 let ctx2X = 0;
 let ctx1X = 0;
 let currentY = 0;
+
+document.addEventListener('DOMContentLoaded', onloadApp);
 // }}}
 
-// {{{ onLoad
-function onLoad() {
+// {{{ onloadApp
+function onloadApp() {
+  document.getElementById('version').textContent = VERSION_TEXT;
+
   canvas1 = document.getElementById('cv1');
   canvas2 = document.getElementById('cv2');
   ctx1 = canvas1.getContext('2d');
@@ -39,12 +43,12 @@ function onLoad() {
   textareaInput = document.getElementById('textarea');
   fontsizeInput = document.getElementById('fontsize');
   fontInfo = document.getElementById('font_info');
-  textareaInput.addEventListener('input', onChange, false);
-  fontsizeInput.addEventListener('input', onChange, false);
   textareaInput.value = 'Hello!!';
   fontsizeInput.value = 12;
 
   onChange();
+  textareaInput.addEventListener('input', onChange, false);
+  fontsizeInput.addEventListener('input', onChange, false);
 }
 // }}}
 

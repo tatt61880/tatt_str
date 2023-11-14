@@ -1,60 +1,69 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <title>Tatt文字列</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
 
-  <link rel="shortcut icon" href="./images/favicon.png?2023.10.27">
-  <link rel="apple-touch-icon" sizes="152x152" href="./images/apple-touch-icon.png?2023.10.27">
+  <link rel="shortcut icon" href="./images/favicon.png?2023.11.11">
+  <link rel="apple-touch-icon" sizes="152x152" href="./images/apple-touch-icon.png?2023.11.11">
 
-  <link rel="stylesheet" href="./css/main.css?2023.10.28">
+  <link rel="stylesheet" href="./css/main.css?2023.11.14">
 
-  <script src="./src/tatt_str.js?2023.10.28"></script>
+  <script src="./src/tatt_str.js?2023.11.14"></script>
 </head>
 
 <body>
-<div id="contents">
-  <h1>Tatt文字列生成ツール</h1>
-  <input type="checkbox" id="checkboxDrawLine" onclick="onChange()"><label for="checkboxDrawLine">ブロックの境界線を描画する</label>
+  <div id="contents">
+    <header id="header">
+      <div id="top" class="flex">
+        <span class="title">Tatt文字列生成ツール</span>
+        <span id="version">vXXXX.XX.XX</span>
+      </div>
+    </header>
 
-  <h2>Tatt文字列</h2>
-  <p>
-    ここに文字列を入力してください。<br>
-    <input type="text" id="textarea" size="30">
-    <br>
-    フォントサイズ: <input type="number" id="fontsize" min="2" max="20" style="width:50px;"><br>
-    Font info: <span id="font_info"></span>
-  </p>
-  
-  <h2>通常の文字列</h2>
-  <p>
-    <canvas id="cv1" width="500" height="20"></canvas>
-  </p>
+    <input type="checkbox" id="checkboxDrawLine" onclick="onChange()"><label
+      for="checkboxDrawLine">ブロックの境界線を描画する</label>
 
-  <h2>Tatt文字列</h2>
-  <p>
-    <canvas id="cv2" width="2000" height="400"></canvas>
-  </p>
+    <h2>Tatt文字列</h2>
+    <p>
+      ここに文字列を入力してください。<br>
+      <input type="text" id="textarea" size="30">
+      <br>
+      フォントサイズ: <input type="number" id="fontsize" min="2" max="20" style="width:50px;"><br>
+      Font info: <span id="font_info"></span>
+    </p>
 
-  <h2>このプログラムの使い方</h2>
-  <p>
-    入力欄の文字列を編集後、Enterを入力するか、テキストエリアからフォーカスを外すと画像が更新されます。<br>
-    【2019/01/03追記】<br>
-    Windows上で動作確認をしていましたが、iOSなどのアンチエイリアスがかかるケース(「通常の文字列」がぼやけた表示になるケース)で、あまり良い変換にならないことがわかりましたm(__)m
-  </p>
+    <h2>通常の文字列</h2>
+    <p>
+      <canvas id="cv1" width="500" height="20"></canvas>
+    </p>
 
-  <h2>このプログラムの作者</h2>
-  <table style="text-align:center; border:0;">
-    <tr>
-      <td>
-        <img src="./images/tatt61880.png" alt="(Tattアイコン)">
-      </td>
-      <td>
-        たっと(Tatt) <a target="_blank" href="https://twitter.com/tatt61880">@tatt61880</a>
-      </td>
-    </tr>
-  </table>
-</div>
+    <h2>Tatt文字列</h2>
+    <p>
+      <canvas id="cv2" width="2000" height="400"></canvas>
+    </p>
+
+    <h2>このプログラムの使い方</h2>
+    <p>
+      入力欄の文字列を編集後、Enterを入力するか、テキストエリアからフォーカスを外すと画像が更新されます。<br>
+      【2019/01/03追記】<br>
+      Windows上で動作確認をしていましたが、iOSなどのアンチエイリアスがかかるケース(「通常の文字列」がぼやけた表示になるケース)で、あまり良い変換にならないことがわかりましたm(__)m
+    </p>
+
+    <h2>このプログラムの作者</h2>
+    <table style="text-align:center; border:0;">
+      <tr>
+        <td>
+          <img src="./images/tatt61880.png" alt="(Tattアイコン)">
+        </td>
+        <td>
+          たっと(Tatt) <a target="_blank" href="https://twitter.com/tatt61880">@tatt61880</a>
+        </td>
+      </tr>
+    </table>
+  </div>
 </body>
+
 </html>
