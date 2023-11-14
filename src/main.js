@@ -29,6 +29,7 @@
   let ctx1X = 0;
   let currentY = 0;
 
+  window.onChange = onChange;
   document.addEventListener('DOMContentLoaded', onloadApp);
 
   function onloadApp() {
