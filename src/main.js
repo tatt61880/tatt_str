@@ -36,8 +36,8 @@
 
     canvas1 = document.getElementById('cv1');
     canvas2 = document.getElementById('cv2');
-    ctx1 = canvas1.getContext('2d');
-    ctx2 = canvas2.getContext('2d');
+    ctx1 = canvas1.getContext('2d', { willReadFrequently: true });
+    ctx2 = canvas2.getContext('2d', { willReadFrequently: true });
     textareaInput = document.getElementById('textarea');
     fontsizeInput = document.getElementById('fontsize');
     fontInfo = document.getElementById('font_info');
