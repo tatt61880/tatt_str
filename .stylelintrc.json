@@ -4,6 +4,14 @@
     "stylelint-config-recess-order"
   ],
   "rules": {
-    "color-hex-length": "long"
+    "color-hex-length": "long",
+    "property-no-vendor-prefix": [
+      true,
+      {
+        "ignoreProperties": [
+          "user-select"
+        ]
+      }
+    ]
   }
 }
