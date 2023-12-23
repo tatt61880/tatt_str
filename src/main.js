@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  const VERSION_TEXT = 'v2023.11.14';
+  const VERSION_TEXT = 'v' + '2023.12.23';
 
   const idNoBlock = -1;
   const idInitial = -2;
