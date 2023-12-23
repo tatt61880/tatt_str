@@ -20,8 +20,7 @@
   let fontsizeInput;
   let fontsize = 12;
   let fontInfo;
-  const img = new Image();
-  img.src = './images/blocks.png?v=2023.11.11';
+  let img;
 
   let ctx2Xnext = 0;
   let ctx2Ynext = 0;
@@ -32,7 +31,17 @@
   window.onchange = onChange;
   document.addEventListener('DOMContentLoaded', onloadApp);
 
-  function onloadApp() {
+  function loadImage(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = (e) => reject(e);
+      img.src = src;
+    });
+  }
+
+  async function onloadApp() {
+    img = await loadImage('./images/blocks.png?v=2023.11.11');
     document.getElementById('version').textContent = VERSION_TEXT;
 
     canvas1 = document.getElementById('cv1');
@@ -58,6 +67,7 @@
     draw(text); // 描画に必要な幅と高さを計算するために一度描画します。
     canvas2.width = (ctx2Xnext + 1.5) * blockWidth2;
     canvas2.height = ctx2Ynext * blockHeight2;
+
     draw(text); // 再描画します。
     fontInfo.innerHTML = ctx1.font;
   }
