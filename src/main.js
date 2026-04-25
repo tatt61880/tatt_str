@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  const VERSION_TEXT = 'v' + '2023.12.23';
+  const VERSION_TEXT = 'v' + '2026.04.25';
 
   const idNoBlock = -1;
   const idInitial = -2;
@@ -19,7 +19,6 @@
   let textareaInput;
   let fontsizeInput;
   let fontsize = 12;
-  let fontInfo;
   let img;
 
   let ctx2Xnext = 0;
@@ -50,7 +49,6 @@
     ctx2 = canvas2.getContext('2d', { willReadFrequently: true });
     textareaInput = document.getElementById('textarea');
     fontsizeInput = document.getElementById('fontsize');
-    fontInfo = document.getElementById('font_info');
     textareaInput.value = 'Hello!!';
     fontsizeInput.value = 12;
 
@@ -69,7 +67,6 @@
     canvas2.height = ctx2Ynext * blockHeight2;
 
     draw(text); // 再描画します。
-    fontInfo.innerHTML = ctx1.font;
   }
 
   function draw(text) {

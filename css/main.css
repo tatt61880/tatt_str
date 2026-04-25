@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 html {
-  font-size: 14px;
+  font-size: 1.2rem;
 }
 
 body {
@@ -18,6 +18,12 @@ header {
   text-align: left;
   background-color: #c0cbff;
   border: 1px solid #c0cbff;
+
+  .flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .title {
@@ -28,6 +34,7 @@ header {
 }
 
 #version {
+  margin: 5px;
   font-size: 0.9rem;
   font-weight: bold;
   color: #7777aa;
@@ -48,7 +55,7 @@ ol,
 blockquote,
 span,
 input {
-  margin: 5px 15px;
+  margin: 5px 10px;
 }
 
 ul,
@@ -78,5 +85,21 @@ td {
 }
 
 pre {
-  font-family: "MS Gothic", "Osaka-等幅", Osaka-Mono, monospace;
+  font-family: 'MS Gothic', 'Osaka-等幅', Osaka-Mono, monospace;
+}
+
+input {
+  border: solid 1px #808080;
+}
+
+.fontsize {
+  width: 50px;
+}
+
+input[type='checkbox'] {
+  cursor: pointer;
+}
+
+label {
+  cursor: pointer;
 }

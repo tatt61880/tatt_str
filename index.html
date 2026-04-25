@@ -9,9 +9,9 @@
   <link rel="shortcut icon" href="./images/favicon.png?2023.11.11">
   <link rel="apple-touch-icon" sizes="152x152" href="./images/apple-touch-icon.png?2023.11.11">
 
-  <link rel="stylesheet" href="./css/main.css?2023.12.23">
+  <link rel="stylesheet" href="./css/main.css?2026.04.25">
 
-  <script src="./src/main.js?2023.12.23"></script>
+  <script src="./src/main.js?2026.04.25"></script>
 </head>
 
 <body>
@@ -23,16 +23,17 @@
       </div>
     </header>
 
-    <input type="checkbox" id="checkboxDrawLine" onclick="onChange()"><label
-      for="checkboxDrawLine">ブロックの境界線を描画する</label>
+    <label for="checkboxDrawLine">
+      <input type="checkbox" id="checkboxDrawLine" onclick="onChange()">
+      ブロックの境界線を描画する
+    </label>
 
     <h2>Tatt文字列</h2>
     <p>
       ここに文字列を入力してください。<br>
       <input type="text" id="textarea" size="30">
       <br>
-      フォントサイズ: <input type="number" id="fontsize" min="2" max="20" style="width:50px;"><br>
-      Font info: <span id="font_info"></span>
+      フォントサイズ: <input type="number" id="fontsize" min="2" max="20"><br>
     </p>
 
     <h2>通常の文字列</h2>
