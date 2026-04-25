@@ -304,7 +304,7 @@
   function drawData(data) {
     const height = data.length;
     const width = data[0].length;
-    const drawLine = document.getElementById('checkboxDrawLine').checked;
+    const drawLine = document.getElementById('checkbox-draw-line').checked;
     for (let y = height - 1; y >= 0; y--) {
       for (let x = width - 1; x >= 0; x--) {
         const posX = (ctx2X + x + 1) * blockWidth2;
