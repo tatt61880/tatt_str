@@ -17,7 +17,6 @@ body {
 
 #contents {
   width: min(100%, 1000px);
-  min-height: 100vh;
   margin: 0 auto;
   background-color: #ffffff;
 }
@@ -113,16 +112,13 @@ canvas {
 }
 
 .author {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 10px;
+  margin: 5px 10px;
+  text-align: center;
+  border: 0;
 }
 
-.author img {
-  display: block;
-  max-width: 100%;
-  height: auto;
+.author td {
+  padding: 0 10px;
 }
 
 @media (width <= 480px) {

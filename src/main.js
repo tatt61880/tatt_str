@@ -15,7 +15,6 @@
   const DEFAULT_FONT_SIZE = 12;
   const MIN_FONT_SIZE = 2;
   const MAX_FONT_SIZE = 20;
-  const ALPHA_THRESHOLD = 128;
 
   let canvasPreview;
   let canvasOutput;
@@ -177,7 +176,7 @@
     rasterContext.fillText(character, leftPadding, baseline);
 
     const imageData = rasterContext.getImageData(0, 0, rasterCanvas.width, rasterCanvas.height);
-    const horizontalBounds = findHorizontalBounds(imageData, ALPHA_THRESHOLD);
+    const horizontalBounds = findHorizontalBounds(imageData);
 
     if (horizontalBounds === null) {
       return createEmptyData(dataHeight, measuredWidth);
@@ -189,7 +188,8 @@
 
     for (let y = 0; y < dataHeight; y++) {
       for (let x = minX; x <= maxX; x++) {
-        if (getAlpha(imageData, x, y) >= ALPHA_THRESHOLD) {
+        // アンチエイリアスで薄く描かれた横線なども、元の処理と同様に残します。
+        if (getAlpha(imageData, x, y) !== 0) {
           data[y][x - minX] = ID_SIMPLE;
         }
       }
@@ -198,13 +198,13 @@
     return data;
   }
 
-  function findHorizontalBounds(imageData, threshold) {
+  function findHorizontalBounds(imageData) {
     let minX = imageData.width;
     let maxX = -1;
 
     for (let x = 0; x < imageData.width; x++) {
       for (let y = 0; y < imageData.height; y++) {
-        if (getAlpha(imageData, x, y) < threshold) continue;
+        if (getAlpha(imageData, x, y) === 0) continue;
         minX = Math.min(minX, x);
         maxX = Math.max(maxX, x);
         break;
