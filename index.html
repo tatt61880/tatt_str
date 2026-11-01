@@ -1,70 +1,70 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-  <title>Tatt文字列</title>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tatt文字列生成ツール</title>
   <link rel="shortcut icon" href="./images/favicon.png?2023.11.11">
   <link rel="apple-touch-icon" sizes="152x152" href="./images/apple-touch-icon.png?2023.11.11">
-
   <link rel="stylesheet" href="./css/main.css">
-
-  <script src="./src/main.js"></script>
+  <script src="./src/main.js" defer></script>
 </head>
-
 <body>
-  <div id="contents">
+  <main id="contents">
     <header id="header">
-      <div id="top" class="flex">
+      <div id="top">
         <span class="title">Tatt文字列生成ツール</span>
-        <span id="version">vXXXX.XX.XX</span>
+        <span id="version" aria-label="バージョン">vXXXX.XX.XX</span>
       </div>
     </header>
 
-    <label for="checkbox-draw-line">
-      <input type="checkbox" id="checkbox-draw-line" onclick="onChange()">
-      ブロックの境界線を描画する
-    </label>
+    <section class="settings" aria-labelledby="settings-heading">
+      <h2 id="settings-heading">入力</h2>
+      <div class="settings-body">
+        <label class="field" for="text-input">
+          <span>文字列</span>
+          <input type="text" id="text-input" autocomplete="off" maxlength="500">
+        </label>
+        <label class="field" for="font-size-input">
+          <span>フォントサイズ</span>
+          <input type="number" id="font-size-input" min="2" max="20" step="1">
+        </label>
+        <label class="checkbox-field" for="checkbox-draw-line">
+          <input type="checkbox" id="checkbox-draw-line">
+          ブロックの境界線を描画する
+        </label>
+      </div>
+    </section>
 
-    <h2>Tatt文字列</h2>
-    <p>
-      ここに文字列を入力してください。<br>
-      <input type="text" id="textarea" size="30">
-      <br>
-      フォントサイズ: <input type="number" id="fontsize" min="2" max="20"><br>
-    </p>
+    <section aria-labelledby="normal-heading">
+      <h2 id="normal-heading">通常の文字列</h2>
+      <div class="canvas-wrap">
+        <canvas id="cv1" width="500" height="20"></canvas>
+      </div>
+    </section>
 
-    <h2>通常の文字列</h2>
-    <p>
-      <canvas id="cv1" width="500" height="20"></canvas>
-    </p>
+    <section aria-labelledby="tatt-heading">
+      <h2 id="tatt-heading">Tatt文字列</h2>
+      <div class="canvas-wrap">
+        <canvas id="cv2" width="2000" height="400"></canvas>
+      </div>
+    </section>
 
-    <h2>Tatt文字列</h2>
-    <p>
-      <canvas id="cv2" width="2000" height="400"></canvas>
-    </p>
+    <p><button id="save-image" type="button" disabled>PNG画像を保存</button></p>
+    <p id="status" role="status" aria-live="polite"></p>
 
-    <h2>このプログラムの使い方</h2>
-    <p>
-      入力欄の文字列を編集後、Enterを入力するか、テキストエリアからフォーカスを外すと画像が更新されます。<br>
-      【2019/01/03追記】<br>
-      Windows上で動作確認をしていましたが、iOSなどのアンチエイリアスがかかるケース(「通常の文字列」がぼやけた表示になるケース)で、あまり良い変換にならないことがわかりましたm(__)m
-    </p>
+    <section aria-labelledby="usage-heading">
+      <h2 id="usage-heading">このプログラムの使い方</h2>
+      <p>文字列やフォントサイズを変更すると、画像が自動的に更新されます。</p>
+    </section>
 
-    <h2>このプログラムの作者</h2>
-    <table style="text-align:center; border:0;">
-      <tr>
-        <td>
-          <img src="./images/tatt61880.png" alt="(Tattアイコン)">
-        </td>
-        <td>
-          たっと(Tatt) <a target="_blank" href="https://twitter.com/tatt61880">@tatt61880</a>
-        </td>
-      </tr>
-    </table>
-  </div>
+    <section aria-labelledby="author-heading">
+      <h2 id="author-heading">このプログラムの作者</h2>
+      <div class="author">
+        <img src="./images/tatt61880.png" alt="Tattアイコン">
+        <span>たっと(Tatt) <a target="_blank" rel="noopener noreferrer" href="https://twitter.com/tatt61880">@tatt61880</a></span>
+      </div>
+    </section>
+  </main>
 </body>
-
 </html>

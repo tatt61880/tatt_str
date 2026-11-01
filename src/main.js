@@ -1,157 +1,241 @@
 (function () {
   'use strict';
-  const VERSION_TEXT = 'v' + '2026.04.25';
 
-  const idNoBlock = -1;
-  const idInitial = -2;
-  const idTarget = -3;
-  const idSimple = 0;
-  const blockWidth = 25;
-  const blockHeight = 19;
-  const blockWidth2 = 12;
-  const blockHeight2 = 13;
-  const fontname = 'MS Gothic';
+  const VERSION_TEXT = 'v2026.11.01';
 
-  let canvas1;
-  let canvas2;
-  let ctx1;
-  let ctx2;
-  let textareaInput;
-  let fontsizeInput;
-  let fontsize = 12;
-  let img;
+  const ID_NO_BLOCK = -1;
+  const ID_INITIAL = -2;
+  const ID_TARGET = -3;
+  const ID_SIMPLE = 0;
+  const BLOCK_WIDTH = 25;
+  const BLOCK_HEIGHT = 19;
+  const BLOCK_WIDTH_OUTPUT = 12;
+  const BLOCK_HEIGHT_OUTPUT = 13;
+  const FONT_NAME = '"MS Gothic", "Osaka-Mono", monospace';
+  const DEFAULT_FONT_SIZE = 12;
+  const MIN_FONT_SIZE = 2;
+  const MAX_FONT_SIZE = 20;
+  const ALPHA_THRESHOLD = 128;
 
-  let ctx2Xnext = 0;
-  let ctx2Ynext = 0;
-  let ctx2X = 0;
-  let ctx1X = 0;
-  let currentY = 0;
+  let canvasPreview;
+  let canvasOutput;
+  let contextPreview;
+  let contextOutput;
+  let textInput;
+  let fontSizeInput;
+  let drawLineInput;
+  let blockImage;
+  let outputX = 0;
+  let outputTop = 0;
+  let outputBottom = 0;
 
-  window.onchange = onChange;
-  document.addEventListener('DOMContentLoaded', onloadApp);
+  const rasterCanvas = document.createElement('canvas');
+  const rasterContext = rasterCanvas.getContext('2d', { willReadFrequently: true });
+
+  document.addEventListener('DOMContentLoaded', initialize);
+
+  async function initialize() {
+    canvasPreview = document.getElementById('cv1');
+    canvasOutput = document.getElementById('cv2');
+    contextPreview = canvasPreview.getContext('2d');
+    contextOutput = canvasOutput.getContext('2d');
+    textInput = document.getElementById('text-input');
+    fontSizeInput = document.getElementById('font-size-input');
+    drawLineInput = document.getElementById('checkbox-draw-line');
+
+    document.getElementById('version').textContent = VERSION_TEXT;
+    textInput.value = 'Hello!!';
+    fontSizeInput.value = DEFAULT_FONT_SIZE;
+
+    try {
+      blockImage = await loadImage('./images/blocks.png?v=2023.11.11');
+    } catch {
+      document.getElementById('status').textContent = 'ブロック画像を読み込めませんでした。ページを再読み込みしてください。';
+      return;
+    }
+
+    document.getElementById('save-image').addEventListener('click', () => {
+      canvasOutput.toBlob((blob) => {
+        if (!blob) {
+          document.getElementById('status').textContent = '画像を保存できませんでした。';
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'tatt-str.png';
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+      }, 'image/png');
+    });
+
+    textInput.addEventListener('input', render);
+    fontSizeInput.addEventListener('input', render);
+    drawLineInput.addEventListener('change', render);
+
+    render();
+  }
 
   function loadImage(src) {
     return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = (e) => reject(e);
-      img.src = src;
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = reject;
+      image.src = src;
     });
   }
 
-  async function onloadApp() {
-    img = await loadImage('./images/blocks.png?v=2023.11.11');
-    document.getElementById('version').textContent = VERSION_TEXT;
+  function render() {
+    const text = textInput.value.slice(0, 500);
+    const fontSize = getFontSize();
 
-    canvas1 = document.getElementById('cv1');
-    canvas2 = document.getElementById('cv2');
-    ctx1 = canvas1.getContext('2d', { willReadFrequently: true });
-    ctx2 = canvas2.getContext('2d', { willReadFrequently: true });
-    textareaInput = document.getElementById('textarea');
-    fontsizeInput = document.getElementById('fontsize');
-    textareaInput.value = 'Hello!!';
-    fontsizeInput.value = 12;
+    drawPreview(text, fontSize);
 
-    onChange();
-    textareaInput.addEventListener('input', onChange, false);
-    fontsizeInput.addEventListener('input', onChange, false);
-  }
-
-  function onChange() {
-    const text = textareaInput.value;
-    fontsize = fontsizeInput.value;
-    ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
-
-    draw(text); // 描画に必要な幅と高さを計算するために一度描画します。
-    canvas2.width = (ctx2Xnext + 1.5) * blockWidth2;
-    canvas2.height = ctx2Ynext * blockHeight2;
-
-    draw(text); // 再描画します。
-  }
-
-  function draw(text) {
-    ctx2Xnext = 0;
-    ctx2X = 0;
-    ctx1X = 0;
-    currentY = 0;
-    ctx2.fillStyle = 'rgb(255, 255, 255)';
-    ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
-    for (let i = 0; i < text.length; i++) {
-      const data = getCharData(text[i]);
+    const characters = splitGraphemes(text);
+    const glyphs = characters.map((character) => getCharData(character, fontSize));
+    outputTop = Infinity;
+    outputBottom = 1;
+    let width = 0;
+    for (const data of glyphs) {
+      for (let y = 0; y < data.length; y++) {
+        for (let x = 0; x < data[y].length; x++) {
+          if (data[y][x] === ID_NO_BLOCK) continue;
+          outputTop = Math.min(outputTop, y * BLOCK_HEIGHT_OUTPUT - x);
+          outputBottom = Math.max(outputBottom, y * BLOCK_HEIGHT_OUTPUT - x + BLOCK_HEIGHT);
+        }
+      }
+      width += data[0].length + 1;
+    }
+    if (!Number.isFinite(outputTop)) outputTop = 0;
+    const outputWidth = Math.ceil((width + 1.5) * BLOCK_WIDTH_OUTPUT);
+    const outputHeight = outputBottom - outputTop;
+    const status = document.getElementById('status');
+    const save = document.getElementById('save-image');
+    if (outputWidth > 16000 || outputWidth * outputHeight > 16000000) {
+      canvasOutput.width = canvasOutput.height = 1;
+      status.textContent = '画像が大きすぎます。文字列を短くしてください。';
+      save.disabled = true;
+      return;
+    }
+    canvasOutput.width = characters.length ? outputWidth : 1;
+    canvasOutput.height = characters.length ? outputHeight : 1;
+    contextOutput.fillStyle = '#ffffff';
+    contextOutput.fillRect(0, 0, canvasOutput.width, canvasOutput.height);
+    outputX = 0;
+    for (const data of glyphs) {
       addTatt(data);
       drawData(data);
+      outputX += data[0].length + 1;
     }
+    status.textContent = '';
+    save.disabled = characters.length === 0;
   }
 
-  function getCharData(txt) {
-    ctx1.font = fontsize + 'px ' + fontname;
-    ctx1.fillStyle = 'blue';
+  function getFontSize() {
+    if (fontSizeInput.value === '') return DEFAULT_FONT_SIZE;
+    const value = Math.round(Number(fontSizeInput.value));
+    if (!Number.isFinite(value)) return DEFAULT_FONT_SIZE;
+    return Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, value));
+  }
 
-    const tm = ctx1.measureText(txt);
-    const width = Math.ceil(tm.width);
-    const height = fontsize;
-    ctx1.fillText(txt, ctx1X, currentY + fontsize);
+  function drawPreview(text, fontSize) {
+    const font = `${fontSize}px ${FONT_NAME}`;
+    contextPreview.font = font;
 
-    let minX = ctx1X;
-    let maxX = ctx1X + width - 1;
-    const minY = currentY;
-    const maxY = currentY + height;
+    const measuredWidth = Math.ceil(contextPreview.measureText(text).width);
+    canvasPreview.width = Math.max(1, measuredWidth + 4);
+    canvasPreview.height = fontSize + 6;
 
-    for (let x = maxX; x >= minX; x--) {
-      for (let y = minY; y <= maxY; y++) {
-        const alpha = ctx1.getImageData(x, y, 1, 1).data[3];
-        if (alpha) {
-          maxX = x;
-          x = -1;
-          y = maxY + 1;
-        }
-      }
+    contextPreview.font = font;
+    contextPreview.fillStyle = 'blue';
+    contextPreview.textBaseline = 'top';
+    contextPreview.fillText(text, 2, 2);
+  }
+
+  function splitGraphemes(text) {
+    if (typeof Intl.Segmenter === 'function') {
+      const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
+      return Array.from(segmenter.segment(text), ({ segment }) => segment);
+    }
+    return Array.from(text);
+  }
+
+  function getCharData(character, fontSize) {
+    const font = `${fontSize}px ${FONT_NAME}`;
+    rasterContext.font = font;
+    const metrics = rasterContext.measureText(character);
+    const leftPadding = Math.ceil(Math.max(0, metrics.actualBoundingBoxLeft));
+    const measuredWidth = Math.max(1, Math.ceil(Math.max(metrics.width, metrics.actualBoundingBoxRight)) + leftPadding);
+    const baseline = Math.ceil(fontSize * 1.5);
+    const dataHeight = Math.max(fontSize * 2, baseline + Math.ceil(metrics.actualBoundingBoxDescent) + 1);
+
+    rasterCanvas.width = measuredWidth;
+    rasterCanvas.height = dataHeight;
+    rasterContext.font = font;
+    rasterContext.fillStyle = '#000000';
+    rasterContext.textBaseline = 'alphabetic';
+    rasterContext.fillText(character, leftPadding, baseline);
+
+    const imageData = rasterContext.getImageData(0, 0, rasterCanvas.width, rasterCanvas.height);
+    const horizontalBounds = findHorizontalBounds(imageData, ALPHA_THRESHOLD);
+
+    if (horizontalBounds === null) {
+      return createEmptyData(dataHeight, measuredWidth);
     }
 
-    for (let x = minX; x <= maxX; x++) {
-      for (let y = minY; y <= maxY; y++) {
-        const alpha = ctx1.getImageData(x, y, 1, 1).data[3];
-        if (alpha) {
-          minX = x;
-          x = maxX + 1;
-          y = maxY + 1;
-        }
-      }
-    }
+    const { minX, maxX } = horizontalBounds;
+    const dataWidth = maxX - minX + 1;
+    const data = Array.from({ length: dataHeight }, () => Array(dataWidth).fill(ID_NO_BLOCK));
 
-    const data = new Array(maxY - minY + 1);
-    for (let y = minY; y <= maxY; y++) {
-      data[y - minY] = new Array(maxX - minX + 1);
+    for (let y = 0; y < dataHeight; y++) {
       for (let x = minX; x <= maxX; x++) {
-        const alpha = ctx1.getImageData(x, y, 1, 1).data[3];
-        if (alpha) {
-          data[y - minY][x - minX] = idSimple;
-        } else {
-          data[y - minY][x - minX] = idNoBlock;
+        if (getAlpha(imageData, x, y) >= ALPHA_THRESHOLD) {
+          data[y][x - minX] = ID_SIMPLE;
         }
       }
     }
 
-    ctx2X = ctx2Xnext;
-    ctx2Xnext += maxX - minX + 2;
-    ctx2Ynext = currentY + maxY - minY + 2;
-    ctx1X += width;
     return data;
+  }
+
+  function findHorizontalBounds(imageData, threshold) {
+    let minX = imageData.width;
+    let maxX = -1;
+
+    for (let x = 0; x < imageData.width; x++) {
+      for (let y = 0; y < imageData.height; y++) {
+        if (getAlpha(imageData, x, y) < threshold) continue;
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        break;
+      }
+    }
+
+    if (maxX < 0) return null;
+    return { minX, maxX };
+  }
+
+  function getAlpha(imageData, x, y) {
+    return imageData.data[(y * imageData.width + x) * 4 + 3];
+  }
+
+  function createEmptyData(height, width) {
+    return Array.from({ length: height }, () => Array(width).fill(ID_NO_BLOCK));
   }
 
   function addTatt(data) {
     const height = data.length;
     const width = data[0].length;
+
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        if (data[y][x] === idSimple) {
-          data[y][x] = idInitial;
-        }
+        if (data[y][x] === ID_SIMPLE) data[y][x] = ID_INITIAL;
       }
     }
+
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        if (data[y][x] === idInitial) {
+        if (data[y][x] === ID_INITIAL) {
           setTarget(x, y, data);
           redistributeId(data);
         }
@@ -162,22 +246,23 @@
   function setTarget(x, y, data) {
     const height = data.length;
     const width = data[0].length;
-    const st = new Stack();
-    st.push([x, y]);
-    while (st.size()) {
-      const pos = st.pop();
-      const xx = pos[0];
-      const yy = pos[1];
-      data[yy][xx] = idTarget;
-      const dx = [-1, -1, -1, 0, 0, 1, 1, 1];
-      const dy = [-1, 0, 1, -1, 1, -1, 0, 1];
-      for (let i = 0; i < 8; i++) {
-        const xxx = xx + dx[i];
-        const yyy = yy + dy[i];
-        if (0 <= xxx && xxx < width && 0 <= yyy && yyy < height) {
-          if (data[yyy][xxx] === idInitial) {
-            st.push([xxx, yyy]);
-          }
+    const stack = [[x, y]];
+    const directions = [
+      [-1, -1], [-1, 0], [-1, 1],
+      [0, -1], [0, 1],
+      [1, -1], [1, 0], [1, 1],
+    ];
+
+    while (stack.length > 0) {
+      const [currentX, currentY] = stack.pop();
+      if (data[currentY][currentX] !== ID_INITIAL) continue;
+      data[currentY][currentX] = ID_TARGET;
+
+      for (const [dx, dy] of directions) {
+        const nextX = currentX + dx;
+        const nextY = currentY + dy;
+        if (0 <= nextX && nextX < width && 0 <= nextY && nextY < height && data[nextY][nextX] === ID_INITIAL) {
+          stack.push([nextX, nextY]);
         }
       }
     }
@@ -186,196 +271,134 @@
   function redistributeId(data) {
     const height = data.length;
     const width = data[0].length;
+    const bounds = getTargetBounds(data);
+    if (bounds === null) return;
 
-    let minY;
-    let maxY;
-    let minX;
-    let maxX;
-    for (let y = height - 1; y >= 0; y--) {
-      for (let x = 0; x < width; x++) {
-        if (data[y][x] === idTarget) {
-          maxY = y;
-          y = -1;
-          break;
-        }
-      }
-    }
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        if (data[y][x] === idTarget) {
-          minY = y;
-          y = height;
-          break;
-        }
-      }
-    }
-    for (let x = 0; x < width; x++) {
-      for (let y = minY; y <= maxY; y++) {
-        if (data[y][x] === idTarget) {
-          minX = x;
-          x = width;
-          break;
-        }
-      }
-    }
-    for (let x = width - 1; x >= 0; x--) {
-      for (let y = minY; y <= maxY; y++) {
-        if (data[y][x] === idTarget) {
-          maxX = x;
-          x = -1;
-          break;
-        }
-      }
-    }
+    const { minX, minY, maxX, maxY } = bounds;
 
-    // 脚の部分(先に脚から解析することで、頭が脚に挟まれた状態のブロックも良い感じ)
-    let legL;
-    let legR;
     if (minY !== maxY || maxX - minX >= 2) {
-      for (let y = height - 1; y >= 0; y--) {
-        for (let x = 0; x < width; x++) {
-          if (data[y][x] === idTarget) {
-            legL = x;
-            for (let xx = width - 1; xx >= 0; xx--) {
-              if (data[y][xx] === idTarget) {
-                legR = xx;
-                break;
-              }
-            }
-            if (legL === legR) {
-              data[y][legL] = 5;
-            } else {
-              data[y][legL] = 6;
-              data[y][legR] = 7;
-            }
-            y = -1;
-            break;
-          }
-        }
-      }
-
-      // 顔の部分
-      let faceL;
-      let faceR;
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          if (data[y][x] === idTarget) {
-            faceL = x;
-            for (let xx = width - 1; xx >= 0; xx--) {
-              if (data[y][xx] === idTarget) {
-                faceR = xx;
-                break;
-              }
-            }
-
-            if (faceL === faceR) {
-              data[y][faceL] = 1;
-            } else if (faceL === faceR - 1) {
-              data[y][faceL] = 8;
-              data[y][faceL + 1] = 9;
-            } else if (faceL === faceR - 2) {
-              if (data[y][faceL + 1] === idTarget) {
-                data[y][faceL] = 2;
-                data[y][faceL + 1] = 3;
-                data[y][faceL + 2] = 4;
-              } else {
-                data[y][faceL] = 1;
-              }
-            } else {
-              data[y][faceL] = 1;
-            }
-            y = height;
-            break;
-          }
-        }
-      }
+      setLegBlocks(data, bounds);
+      setFaceBlocks(data, bounds);
     }
 
-    // それ以外
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        if (data[y][x] === idTarget) {
-          data[y][x] = idSimple;
-        }
+        if (data[y][x] === ID_TARGET) data[y][x] = ID_SIMPLE;
       }
     }
+  }
+
+  function getTargetBounds(data) {
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -1;
+    let maxY = -1;
+
+    for (let y = 0; y < data.length; y++) {
+      for (let x = 0; x < data[y].length; x++) {
+        if (data[y][x] !== ID_TARGET) continue;
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
+    }
+
+    if (maxX < 0) return null;
+    return { minX, minY, maxX, maxY };
+  }
+
+  function setLegBlocks(data, bounds) {
+    for (let y = bounds.maxY; y >= bounds.minY; y--) {
+      const targets = getTargetXs(data[y]);
+      if (targets.length === 0) continue;
+
+      const left = targets[0];
+      const right = targets.at(-1);
+      if (left === right) {
+        data[y][left] = 5;
+      } else {
+        data[y][left] = 6;
+        data[y][right] = 7;
+      }
+      return;
+    }
+  }
+
+  function setFaceBlocks(data, bounds) {
+    for (let y = bounds.minY; y <= bounds.maxY; y++) {
+      const targets = getTargetXs(data[y]);
+      if (targets.length === 0) continue;
+
+      const left = targets[0];
+      const right = targets.at(-1);
+      if (left === right) {
+        data[y][left] = 1;
+      } else if (right - left === 1) {
+        data[y][left] = 8;
+        data[y][right] = 9;
+      } else if (right - left === 2 && data[y][left + 1] === ID_TARGET) {
+        data[y][left] = 2;
+        data[y][left + 1] = 3;
+        data[y][right] = 4;
+      } else {
+        data[y][left] = 1;
+      }
+      return;
+    }
+  }
+
+  function getTargetXs(row) {
+    const result = [];
+    for (let x = 0; x < row.length; x++) {
+      if (row[x] === ID_TARGET) result.push(x);
+    }
+    return result;
   }
 
   function drawData(data) {
     const height = data.length;
     const width = data[0].length;
-    const drawLine = document.getElementById('checkbox-draw-line').checked;
+    const drawLine = drawLineInput.checked;
+
     for (let y = height - 1; y >= 0; y--) {
       for (let x = width - 1; x >= 0; x--) {
-        const posX = (ctx2X + x + 1) * blockWidth2;
-        const posY = (currentY + y) * blockHeight2 - x;
-        if (data[y][x] !== idNoBlock) {
-          drawBlock(posX, posY, data[y][x], 0);
-          if (drawLine) continue;
-          let flagRight = false;
-          let flagBottom = false;
-          if (x !== width - 1) {
-            if (data[y][x + 1] !== idNoBlock) {
-              flagRight = true;
-              if (data[y][x] !== 8) {
-                drawBlock(posX, posY, 0, 1);
-              }
-            }
-          }
-          if (y !== height - 1) {
-            if (data[y + 1][x] !== idNoBlock) {
-              flagBottom = true;
-              drawBlock(posX, posY, 1, 1);
-            }
-            if (x !== 0 && !flagBottom) {
-              if (data[y + 1][x - 1] !== idNoBlock) {
-                drawBlock(posX, posY, 2, 1);
-              }
-            }
-          }
-          if (flagRight && flagBottom) {
-            if (data[y + 1][x + 1] !== idNoBlock) {
-              drawBlock(posX, posY, 3, 1);
-            }
-          }
+        if (data[y][x] === ID_NO_BLOCK) continue;
+
+        const posX = (outputX + x + 1) * BLOCK_WIDTH_OUTPUT;
+        const posY = y * BLOCK_HEIGHT_OUTPUT - x - outputTop;
+        drawBlock(posX, posY, data[y][x], 0);
+
+        if (drawLine) continue;
+
+        const hasRight = x !== width - 1 && data[y][x + 1] !== ID_NO_BLOCK;
+        const hasBottom = y !== height - 1 && data[y + 1][x] !== ID_NO_BLOCK;
+
+        if (hasRight && data[y][x] !== 8) drawBlock(posX, posY, 0, 1);
+        if (hasBottom) drawBlock(posX, posY, 1, 1);
+
+        if (y !== height - 1 && x !== 0 && !hasBottom && data[y + 1][x - 1] !== ID_NO_BLOCK) {
+          drawBlock(posX, posY, 2, 1);
+        }
+
+        if (hasRight && hasBottom && data[y + 1][x + 1] !== ID_NO_BLOCK) {
+          drawBlock(posX, posY, 3, 1);
         }
       }
     }
   }
 
-  function drawBlock(x, y, id, h) {
-    ctx2.drawImage(
-      img,
-      id * blockWidth,
-      h * blockHeight,
-      blockWidth,
-      blockHeight,
+  function drawBlock(x, y, id, row) {
+    contextOutput.drawImage(
+      blockImage,
+      id * BLOCK_WIDTH,
+      row * BLOCK_HEIGHT,
+      BLOCK_WIDTH,
+      BLOCK_HEIGHT,
       x,
       y,
-      blockWidth,
-      blockHeight
+      BLOCK_WIDTH,
+      BLOCK_HEIGHT
     );
-  }
-
-  class Stack {
-    constructor() {
-      this.data = [];
-    }
-    push(val) {
-      this.data.push(val);
-      return val;
-    }
-    pop() {
-      return this.data.pop();
-    }
-    top() {
-      return this.data[this.data.length - 1];
-    }
-    size() {
-      return this.data.length;
-    }
-    empty() {
-      return this.data.length === 0;
-    }
   }
 })();
