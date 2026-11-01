@@ -23,7 +23,7 @@
       <div class="settings-body">
         <label class="field" for="text-input">
           <span>文字列</span>
-          <input type="text" id="text-input" autocomplete="off" maxlength="500">
+          <textarea id="text-input" rows="3" wrap="off" autocomplete="off" maxlength="500"></textarea>
         </label>
         <label class="field" for="font-size-input">
           <span>フォントサイズ</span>
@@ -56,6 +56,7 @@
     <section aria-labelledby="usage-heading">
       <h2 id="usage-heading">このプログラムの使い方</h2>
       <p>文字列やフォントサイズを変更すると、画像が自動的に更新されます。</p>
+      <p>入力欄でEnterキーを押すと改行できます。空行も画像に反映されます。</p>
       <p>
         【2019/01/03追記】<br>
         Windows上で動作確認をしていましたが、iOSなどのアンチエイリアスがかかるケース(「通常の文字列」がぼやけた表示になるケース)で、あまり良い変換にならないことがわかりましたm(__)m

@@ -72,19 +72,22 @@ p {
   max-width: 100%;
 }
 
-input {
+input,
+textarea {
   padding: 4px 6px;
   font: inherit;
   border: 1px solid #808080;
   border-radius: 3px;
 }
 
-.field input {
+.field input,
+.field textarea {
   min-width: 0;
 }
 
 #text-input {
   width: min(20rem, 65vw);
+  resize: vertical;
 }
 
 #font-size-input {

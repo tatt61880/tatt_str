@@ -25,6 +25,7 @@
   let drawLineInput;
   let blockImage;
   let outputX = 0;
+  let outputY = 0;
   let outputTop = 0;
   let outputBottom = 0;
 
@@ -85,49 +86,63 @@
   }
 
   function render() {
-    const text = textInput.value.slice(0, 500);
+    const text = textInput.value.slice(0, 500).replace(/\r\n?/g, '\n');
+    const lines = text.split('\n');
     const fontSize = getFontSize();
 
-    drawPreview(text, fontSize);
+    drawPreview(lines, fontSize);
 
-    const characters = splitGraphemes(text);
-    const glyphs = characters.map((character) => getCharData(character, fontSize));
+    const glyphLines = lines.map((line) => splitGraphemes(line).map((character) => getCharData(character, fontSize)));
     outputTop = Infinity;
     outputBottom = 1;
-    let width = 0;
-    for (const data of glyphs) {
-      for (let y = 0; y < data.length; y++) {
-        for (let x = 0; x < data[y].length; x++) {
-          if (data[y][x] === ID_NO_BLOCK) continue;
-          outputTop = Math.min(outputTop, y * BLOCK_HEIGHT_OUTPUT - x);
-          outputBottom = Math.max(outputBottom, y * BLOCK_HEIGHT_OUTPUT - x + BLOCK_HEIGHT);
+    let maxWidth = 0;
+    for (const glyphs of glyphLines) {
+      let width = 0;
+      for (const data of glyphs) {
+        for (let y = 0; y < data.length; y++) {
+          for (let x = 0; x < data[y].length; x++) {
+            if (data[y][x] === ID_NO_BLOCK) continue;
+            outputTop = Math.min(outputTop, y * BLOCK_HEIGHT_OUTPUT - x);
+            outputBottom = Math.max(outputBottom, y * BLOCK_HEIGHT_OUTPUT - x + BLOCK_HEIGHT);
+          }
         }
+        width += data[0].length + 1;
       }
-      width += data[0].length + 1;
+      maxWidth = Math.max(maxWidth, width);
     }
-    if (!Number.isFinite(outputTop)) outputTop = 0;
-    const outputWidth = Math.ceil((width + 1.5) * BLOCK_WIDTH_OUTPUT);
-    const outputHeight = outputBottom - outputTop;
+    if (!Number.isFinite(outputTop)) {
+      outputTop = 0;
+      outputBottom = fontSize * BLOCK_HEIGHT_OUTPUT;
+    }
+    // 全行で同じ基準位置・高さを使い、先頭・途中・末尾の空行も残します。
+    const lineHeight = outputBottom - outputTop;
+    const lineGap = 2 * BLOCK_HEIGHT_OUTPUT;
+    const outputWidth = Math.ceil((maxWidth + 1.5) * BLOCK_WIDTH_OUTPUT);
+    const outputHeight = glyphLines.length * lineHeight + (glyphLines.length - 1) * lineGap;
     const status = document.getElementById('status');
     const save = document.getElementById('save-image');
-    if (outputWidth > 16000 || outputWidth * outputHeight > 16000000) {
+    if (outputWidth > 16000 || outputHeight > 16000 || outputWidth * outputHeight > 16000000) {
       canvasOutput.width = canvasOutput.height = 1;
-      status.textContent = '画像が大きすぎます。文字列を短くしてください。';
+      status.textContent = '画像が大きすぎます。文字数や行数を減らしてください。';
       save.disabled = true;
       return;
     }
-    canvasOutput.width = characters.length ? outputWidth : 1;
-    canvasOutput.height = characters.length ? outputHeight : 1;
+    canvasOutput.width = text.length ? outputWidth : 1;
+    canvasOutput.height = text.length ? outputHeight : 1;
     contextOutput.fillStyle = '#ffffff';
     contextOutput.fillRect(0, 0, canvasOutput.width, canvasOutput.height);
-    outputX = 0;
-    for (const data of glyphs) {
-      addTatt(data);
-      drawData(data);
-      outputX += data[0].length + 1;
+    outputY = 0;
+    for (const glyphs of glyphLines) {
+      outputX = 0;
+      for (const data of glyphs) {
+        addTatt(data);
+        drawData(data);
+        outputX += data[0].length + 1;
+      }
+      outputY += lineHeight + lineGap;
     }
     status.textContent = '';
-    save.disabled = characters.length === 0;
+    save.disabled = text.length === 0;
   }
 
   function getFontSize() {
@@ -137,18 +152,19 @@
     return Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, value));
   }
 
-  function drawPreview(text, fontSize) {
+  function drawPreview(lines, fontSize) {
     const font = `${fontSize}px ${FONT_NAME}`;
     contextPreview.font = font;
 
-    const measuredWidth = Math.ceil(contextPreview.measureText(text).width);
+    const measuredWidth = Math.ceil(Math.max(...lines.map((line) => contextPreview.measureText(line).width)));
     canvasPreview.width = Math.max(1, measuredWidth + 4);
-    canvasPreview.height = fontSize + 6;
+    const lineHeight = fontSize + 6;
+    canvasPreview.height = lines.length * lineHeight;
 
     contextPreview.font = font;
     contextPreview.fillStyle = 'blue';
     contextPreview.textBaseline = 'top';
-    contextPreview.fillText(text, 2, 2);
+    lines.forEach((line, index) => contextPreview.fillText(line, 2, 2 + index * lineHeight));
   }
 
   function splitGraphemes(text) {
@@ -366,7 +382,7 @@
         if (data[y][x] === ID_NO_BLOCK) continue;
 
         const posX = (outputX + x + 1) * BLOCK_WIDTH_OUTPUT;
-        const posY = y * BLOCK_HEIGHT_OUTPUT - x - outputTop;
+        const posY = outputY + y * BLOCK_HEIGHT_OUTPUT - x - outputTop;
         drawBlock(posX, posY, data[y][x], 0);
 
         if (drawLine) continue;
