@@ -35,6 +35,7 @@ body {
 }
 
 .title {
+  margin: 0;
   font-size: 1.5rem;
   font-weight: bold;
   color: #000055;
@@ -88,6 +89,7 @@ textarea {
 #text-input {
   width: min(20rem, 65vw);
   resize: vertical;
+  white-space: pre;
 }
 
 #font-size-input {
